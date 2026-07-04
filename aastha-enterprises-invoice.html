@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aastha Enterprises — Invoice</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --paper: #FBF6EC;
+      --paper-edge: #F1E8D6;
+      --maroon: #7A2E2E;
+      --maroon-deep: #5C2222;
+      --ink: #1F2A44;
+      --ink-soft: #4A5568;
+      --sand: #E4D8BC;
+      --brass: #A9781F;
+      --paid-green: #2F6B4F;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse at top, #EFE6D2 0%, #DCD0AF 100%);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 48px 16px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .sheet {
+      width: 100%;
+      max-width: 720px;
+      background: var(--paper);
+      position: relative;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, .06), 0 20px 45px -20px rgba(60, 40, 20, .45);
+      border: 1px solid var(--sand);
+    }
+
+    /* torn perforation strip along the top, like a receipt-book counterfoil edge */
+    .perf {
+      height: 14px;
+      width: 100%;
+      background-image: radial-gradient(circle at 10px 7px, transparent 5px, var(--paper-edge) 5.5px);
+      background-size: 20px 14px;
+      background-repeat: repeat-x;
+      background-color: transparent;
+    }
+
+    .perf-bg {
+      height: 14px;
+      background:
+        radial-gradient(circle at center, #DCD0AF 5px, transparent 5.5px) 0 0/20px 14px repeat-x,
+        var(--paper);
+    }
+
+    .frame {
+      margin: 22px;
+      border: 1.5px solid var(--maroon);
+      padding: 0;
+    }
+
+    .frame::before {
+      content: none;
+    }
+
+    header.company {
+      padding: 26px 30px 20px;
+      border-bottom: 2px solid var(--maroon);
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .company-id {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .brandline {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .company-name {
+      font-family: 'Fraunces', serif;
+      font-weight: 700;
+      font-size: 30px;
+      color: var(--maroon-deep);
+      letter-spacing: .2px;
+      margin: 0;
+      line-height: 1.05;
+    }
+
+    .devanagari {
+      font-family: 'Tiro Devanagari Hindi', serif;
+      font-size: 16px;
+      color: var(--brass);
+    }
+
+    .proprietors {
+      font-size: 13.5px;
+      color: var(--ink-soft);
+      margin-top: 6px;
+      font-weight: 500;
+    }
+
+    .proprietors .sep {
+      color: var(--sand);
+      margin: 0 6px;
+    }
+
+    .contact-block {
+      text-align: right;
+      font-size: 12.5px;
+      color: var(--ink-soft);
+      line-height: 1.7;
+      white-space: nowrap;
+    }
+
+    .contact-block .fsm {
+      display: inline-block;
+      font-family: 'Space Mono', monospace;
+      font-size: 11.5px;
+      letter-spacing: .5px;
+      color: var(--maroon-deep);
+      background: var(--sand);
+      padding: 2px 8px;
+      border-radius: 2px;
+      margin-bottom: 6px;
+    }
+
+    .contact-block a {
+      color: var(--ink-soft);
+      text-decoration: none;
+    }
+
+    /* meta row: receipt no / date */
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 14px 30px;
+      background: var(--paper-edge);
+      border-bottom: 1px dashed var(--sand);
+      font-size: 13px;
+    }
+
+    .meta-row .field {
+      display: flex;
+      gap: 6px;
+      align-items: baseline;
+    }
+
+    .meta-row label {
+      color: var(--ink-soft);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .meta-row .value {
+      font-family: 'Space Mono', monospace;
+      color: var(--ink);
+      font-size: 13.5px;
+      border-bottom: 1px solid var(--sand);
+      min-width: 90px;
+      padding: 0 2px 1px;
+      outline: none;
+    }
+
+    /* bill-to customer block */
+    .bill-to {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border-bottom: 1px dashed var(--sand);
+    }
+
+    .bill-to .col {
+      padding: 16px 30px;
+    }
+
+    .bill-to .col+.col {
+      border-left: 1px dashed var(--sand);
+    }
+
+    .bill-to .col-label {
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--brass);
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .bill-to .row {
+      display: flex;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--ink);
+      padding: 3px 0;
+    }
+
+    .bill-to .row label {
+      color: var(--ink-soft);
+      min-width: 64px;
+      flex-shrink: 0;
+    }
+
+    .bill-to .row .value {
+      font-family: 'Space Mono', monospace;
+      font-size: 12.5px;
+      color: var(--ink);
+      border-bottom: 1px solid var(--sand);
+      flex: 1;
+      outline: none;
+      padding-bottom: 1px;
+    }
+
+    .eyebrow {
+      text-align: center;
+      padding: 18px 0 6px;
+      font-family: 'Fraunces', serif;
+      font-size: 12.5px;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+      color: var(--brass);
+    }
+
+    /* items table */
+    table.items {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0 0;
+    }
+
+    table.items thead th {
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--ink-soft);
+      text-align: left;
+      padding: 8px 30px;
+      border-bottom: 1.5px solid var(--maroon);
+      font-weight: 600;
+    }
+
+    table.items thead th.num {
+      text-align: right;
+    }
+
+    table.items thead th.center {
+      text-align: center;
+      width: 44px;
+    }
+
+    table.items thead th.remove-col {
+      width: 32px;
+    }
+
+    table.items tbody td {
+      padding: 16px 30px;
+      font-size: 14.5px;
+      color: var(--ink);
+      border-bottom: 1px dashed var(--sand);
+      vertical-align: top;
+    }
+
+    table.items tbody td.center {
+      text-align: center;
+      color: var(--brass);
+      font-family: 'Space Mono', monospace;
+    }
+
+    table.items tbody td.num {
+      text-align: right;
+      font-family: 'Space Mono', monospace;
+      white-space: nowrap;
+    }
+
+    table.items tbody td.remove-cell {
+      padding-left: 0;
+      padding-right: 14px;
+      text-align: center;
+    }
+
+    .row-remove {
+      background: none;
+      border: 1px solid var(--sand);
+      color: var(--maroon);
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      font-size: 13px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .row-remove:hover {
+      background: var(--sand);
+    }
+
+    .item-title {
+      font-weight: 600;
+    }
+
+    .item-sub {
+      font-size: 12.5px;
+      color: var(--ink-soft);
+      margin-top: 3px;
+    }
+
+    .totals {
+      display: flex;
+      justify-content: flex-end;
+      padding: 18px 30px 6px;
+    }
+
+    .totals table {
+      border-collapse: collapse;
+    }
+
+    .totals td {
+      padding: 5px 0 5px 28px;
+      font-size: 13.5px;
+      color: var(--ink-soft);
+    }
+
+    .totals td.num {
+      text-align: right;
+      font-family: 'Space Mono', monospace;
+      color: var(--ink);
+    }
+
+    .totals tr.grand td {
+      border-top: 1.5px solid var(--maroon);
+      padding-top: 10px;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--maroon-deep);
+      font-family: 'Fraunces', serif;
+    }
+
+    .totals tr.grand td.num {
+      font-family: 'Space Mono', monospace;
+    }
+
+    .amount-words {
+      padding: 0 30px 6px;
+      font-size: 12px;
+      color: var(--ink-soft);
+      font-style: italic;
+    }
+
+    .amount-words b {
+      color: var(--ink);
+      font-style: normal;
+    }
+
+    footer.sign {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding: 26px 30px 30px;
+      position: relative;
+    }
+
+    .note {
+      font-size: 11.5px;
+      color: var(--ink-soft);
+      max-width: 260px;
+      line-height: 1.6;
+    }
+
+    .sign-area {
+      text-align: center;
+      font-size: 12px;
+      color: var(--ink-soft);
+    }
+
+    .sign-line {
+      width: 150px;
+      border-top: 1px solid var(--ink-soft);
+      margin-bottom: 6px;
+    }
+
+    /* the signature element: a stamped seal */
+    .seal {
+      position: absolute;
+      right: 150px;
+      top: -6px;
+      width: 96px;
+      height: 96px;
+      border: 2.5px solid var(--paid-green);
+      border-radius: 50%;
+      transform: rotate(-14deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--paid-green);
+      opacity: .85;
+      pointer-events: none;
+    }
+
+    .seal::before {
+      content: '';
+      position: absolute;
+      inset: 6px;
+      border: 1px dashed var(--paid-green);
+      border-radius: 50%;
+    }
+
+    .seal-text {
+      font-family: 'Fraunces', serif;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: .12em;
+      text-align: center;
+      line-height: 1.15;
+    }
+
+    .print-bar {
+      max-width: 720px;
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin: 0 0 14px;
+    }
+
+    .print-btn,
+    .add-btn {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      padding: 9px 18px;
+      border-radius: 3px;
+      cursor: pointer;
+      letter-spacing: .02em;
+    }
+
+    .print-btn {
+      color: var(--paper);
+      background: var(--maroon-deep);
+    }
+
+    .print-btn:hover {
+      background: var(--maroon);
+    }
+
+    .add-btn {
+      color: var(--maroon-deep);
+      background: transparent;
+      border: 1.5px solid var(--maroon-deep);
+    }
+
+    .add-btn:hover {
+      background: var(--sand);
+    }
+
+    .print-btn:focus-visible,
+    .add-btn:focus-visible,
+    [contenteditable]:focus-visible {
+      outline: 2px solid var(--brass);
+      outline-offset: 2px;
+    }
+
+    [contenteditable]:hover {
+      background: rgba(169, 120, 31, .06);
+    }
+
+    @media (max-width: 560px) {
+      header.company {
+        flex-direction: column;
+      }
+
+      .contact-block {
+        text-align: left;
+      }
+
+      .meta-row {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      table.items thead th,
+      table.items tbody td {
+        padding: 12px 16px;
+      }
+
+      .frame {
+        margin: 14px;
+      }
+
+      header.company,
+      .totals,
+      footer.sign,
+      .amount-words {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .seal {
+        display: none;
+      }
+
+      footer.sign {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 18px;
+      }
+
+      .bill-to {
+        grid-template-columns: 1fr;
+      }
+
+      .bill-to .col {
+        padding: 14px 16px;
+      }
+
+      .bill-to .col+.col {
+        border-left: none;
+        border-top: 1px dashed var(--sand);
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+        padding: 0;
+      }
+
+      .print-bar {
+        display: none;
+      }
+
+      .sheet {
+        box-shadow: none;
+        border: none;
+        max-width: none;
+      }
+
+      .remove-cell,
+      th.remove-col {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div style="width:100%;max-width:720px;">
+    <div class="print-bar">
+      <button class="add-btn" id="addItemBtn">+ Add Item</button>
+      <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+    </div>
+
+    <div class="sheet">
+      <div class="perf-bg"></div>
+
+      <div class="frame">
+        <header class="company">
+          <div class="company-id">
+            <div class="brandline">
+              <h1 class="company-name">Aastha Enterprises</h1>
+              <span class="devanagari">आस्था इंटरप्राइजेज</span>
+            </div>
+            <div class="proprietors">Prem Sagar Sharma <span class="sep">|</span>Rituraj Sharma</div>
+          </div>
+          <div class="contact-block">
+            <span class="fsm">FSM CODE: FSMDM035844</span><br>
+            Phone: 8619486016 | 9950006100<br>
+            <a href="mailto:FSMBIKANER@GMAIL.COM">FSMBIKANER@GMAIL.COM</a>
+          </div>
+        </header>
+
+        <div class="meta-row">
+          <div class="field">
+            <label>Invoice No.</label>
+            <span class="value" contenteditable="true">INV-001</span>
+          </div>
+          <div class="field">
+            <label>Date</label>
+            <span class="value" contenteditable="true" id="dateField">04 / 07 / 2026</span>
+          </div>
+        </div>
+
+        <div class="bill-to">
+          <div class="col">
+            <div class="col-label">Bill To</div>
+            <div class="row"><label>Name</label><span class="value" contenteditable="true">Customer Name</span></div>
+            <div class="row"><label>Phone</label><span class="value" contenteditable="true">98XXXXXXXX</span></div>
+            <div class="row"><label>Email</label><span class="value" contenteditable="true">customer@email.com</span>
+            </div>
+          </div>
+          <div class="col">
+            <div class="col-label">Identification</div>
+            <div class="row"><label>PAN No.</label><span class="value" contenteditable="true">ABCDE1234F</span></div>
+          </div>
+        </div>
+
+        <div class="eyebrow">Tax Invoice</div>
+
+        <table class="items" id="itemsTable">
+          <thead>
+            <tr>
+              <th class="center">#</th>
+              <th>Description</th>
+              <th class="num">Amount (₹)</th>
+              <th class="remove-col"></th>
+            </tr>
+          </thead>
+          <tbody id="itemsBody">
+            <tr>
+              <td class="center">1</td>
+              <td>
+                <div class="item-title" contenteditable="true">Renewal of state license (License no.)</div>
+                <div class="item-sub" contenteditable="true">Includes required documentation &amp; processing</div>
+              </td>
+              <td class="num"><span class="amt" contenteditable="true">2500</span></td>
+              <td class="remove-cell"><button class="row-remove" title="Remove item">×</button></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="totals">
+          <table>
+            <tr>
+              <td>Subtotal</td>
+              <td class="num" id="subtotalVal">₹ 2,500.00</td>
+            </tr>
+            <tr class="grand">
+              <td>Total Paid</td>
+              <td class="num" id="grandTotalVal">₹ 2,500.00</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="amount-words">Amount in words: <b id="amountWords">Two Thousand Five Hundred Rupees Only</b></div>
+
+        <footer class="sign">
+          <div class="note">This invoice confirms the service billed by Aastha Enterprises as listed above. Please
+            retain for your records.</div>
+          <div class="seal">
+            <div class="seal-text">PAID<br><span style="font-size:9px; letter-spacing:.2em;">AASTHA ENT.</span></div>
+          </div>
+          <div class="sign-area">
+            <div class="sign-line"></div>
+            Authorised Signatory
+          </div>
+        </footer>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const itemsBody = document.getElementById('itemsBody');
+    const addItemBtn = document.getElementById('addItemBtn');
+    const subtotalVal = document.getElementById('subtotalVal');
+    const grandTotalVal = document.getElementById('grandTotalVal');
+    const amountWords = document.getElementById('amountWords');
+
+    function formatINR(num) {
+      return num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function numberToWords(num) {
+      num = Math.round(num);
+      if (num === 0) return 'Zero Rupees Only';
+      const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten',
+        'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+      const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+      function twoDigits(n) {
+        if (n < 20) return ones[n];
+        return tens[Math.floor(n / 10)] + (n % 10 ? ' ' + ones[n % 10] : '');
+      }
+      function threeDigits(n) {
+        let str = '';
+        if (n >= 100) {
+          str += ones[Math.floor(n / 100)] + ' Hundred';
+          n = n % 100;
+          if (n) str += ' ';
+        }
+        if (n) str += twoDigits(n);
+        return str;
+      }
+
+      let crore = Math.floor(num / 10000000); num %= 10000000;
+      let lakh = Math.floor(num / 100000); num %= 100000;
+      let thousand = Math.floor(num / 1000); num %= 1000;
+      let rest = num;
+
+      let parts = [];
+      if (crore) parts.push(threeDigits(crore) + ' Crore');
+      if (lakh) parts.push(threeDigits(lakh) + ' Lakh');
+      if (thousand) parts.push(threeDigits(thousand) + ' Thousand');
+      if (rest) parts.push(threeDigits(rest));
+
+      return parts.join(' ') + ' Rupees Only';
+    }
+
+    function renumberRows() {
+      itemsBody.querySelectorAll('tr').forEach((row, i) => {
+        row.querySelector('td.center').textContent = i + 1;
+      });
+    }
+
+    function recalc() {
+      let total = 0;
+      itemsBody.querySelectorAll('.amt').forEach(el => {
+        const val = parseFloat(el.textContent.replace(/[^0-9.]/g, '')) || 0;
+        total += val;
+      });
+      subtotalVal.textContent = '₹ ' + formatINR(total);
+      grandTotalVal.textContent = '₹ ' + formatINR(total);
+      amountWords.textContent = numberToWords(total);
+    }
+
+    function attachRowEvents(row) {
+      row.querySelectorAll('.amt').forEach(el => {
+        el.addEventListener('input', recalc);
+        el.addEventListener('blur', () => {
+          const val = parseFloat(el.textContent.replace(/[^0-9.]/g, '')) || 0;
+          el.textContent = val;
+          recalc();
+        });
+      });
+      row.querySelector('.row-remove').addEventListener('click', () => {
+        if (itemsBody.querySelectorAll('tr').length <= 1) return;
+        row.remove();
+        renumberRows();
+        recalc();
+      });
+    }
+
+    itemsBody.querySelectorAll('tr').forEach(attachRowEvents);
+
+    addItemBtn.addEventListener('click', () => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td class="center"></td>
+        <td>
+          <div class="item-title" contenteditable="true">New item</div>
+          <div class="item-sub" contenteditable="true">Add a short description</div>
+        </td>
+        <td class="num"><span class="amt" contenteditable="true">0</span></td>
+        <td class="remove-cell"><button class="row-remove" title="Remove item">×</button></td>
+      `;
+      itemsBody.appendChild(row);
+      attachRowEvents(row);
+      renumberRows();
+      recalc();
+      row.querySelector('.item-title').focus();
+    });
+
+    recalc();
+  </script>
+
+</body>
+
+</html>
